@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0057d9" />
+    <title>Daily Task Tracker for Engineering Students</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <main class="container">
+      <!-- Header -->
+      <header class="header card">
+        <div>
+          <h1>Daily Task Tracker</h1>
+          <p>For Engineering Students</p>
+          <p id="studentName" class="student-name"></p>
+        </div>
+        <div class="header-actions">
+          <p id="todayDate"></p>
+          <button id="notifToggle" class="btn-secondary" title="Enable push notifications">🔔 Notify</button>
+          <button id="themeToggle" class="btn-secondary">Toggle Theme</button>
+        </div>
+      </header>
+
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+
+      <!-- Controls: Add Task with Date Range + Time -->
+      <section class="card controls" id="addTaskSection">
+        <h2 class="section-heading">Add New Task</h2>
+        <div class="input-grid">
+          <input
+            id="taskInput"
+            type="text"
+            placeholder="Add a task (e.g., Study DSA)"
+          />
+          <select id="typeInput">
+            <option value="do">Do ✅</option>
+            <option value="dont">Don't ❌</option>
+          </select>
+          <label class="date-label">
+            From
+            <input id="fromDateInput" type="date" />
+          </label>
+          <label class="date-label">
+            To
+            <input id="toDateInput" type="date" />
+          </label>
+          <label class="date-label">
+            Time
+            <input id="timeInput" type="time" />
+          </label>
+          <button id="addTaskBtn" class="btn-primary">Add Task</button>
+        </div>
+      </section>
+
+      <!-- Stats & Progress (TODAY ONLY) -->
+      <section class="stats-grid" id="statsSection">
+        <article class="card stat-item">
+          <h3>Today's Total</h3>
+          <p id="statTotal">0</p>
+        </article>
+        <article class="card stat-item done">
+          <h3>Done</h3>
+          <p id="statDone">0</p>
+        </article>
+        <article class="card stat-item not-done">
+          <h3>Not Done</h3>
+          <p id="statNotDone">0</p>
+        </article>
+        <article class="card stat-item progress">
+          <h3>Completion</h3>
+          <p id="statCompletion">0%</p>
+        </article>
+      </section>
+
+      <!-- Progress Bar -->
+      <section class="card progress-bar-card" id="progressSection">
+        <div class="progress-bar-container">
+          <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+        </div>
+        <p id="progressText" class="progress-text">0% Complete</p>
+      </section>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs card">
+        <button class="tab-btn active" data-tab="today">📅 TODAY</button>
+        <button class="tab-btn" data-tab="future">✏️ FUTURE</button>
+        <button class="tab-btn" data-tab="history">📜 HISTORY</button>
+      </nav>
+
+      <!-- TODAY Tab: Today's Tasks (Editable) -->
+      <section class="tab-content active" id="tabToday">
+        <div class="card today-section">
+          <div class="section-title today-title">
+            <span class="title-icon">🟢</span>
+            <span>TODAY'S TASKS</span>
+            <span class="title-badge editable">EDITABLE</span>
+          </div>
+          <div class="columns">
+            <article class="task-column do-column">
+              <div class="column-header">✅ Do's</div>
+              <ul id="todayDoList" class="task-list"></ul>
+            </article>
+            <article class="task-column dont-column">
+              <div class="column-header">❌ Don'ts</div>
+              <ul id="todayDontList" class="task-list"></ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- FUTURE Tab: Future Tasks (Editable) -->
+      <section class="tab-content" id="tabFuture">
+        <div class="card future-section">
+          <div class="section-title future-title">
+            <span class="title-icon">✏️</span>
+            <span>FUTURE TASKS</span>
+            <span class="title-badge editable">EDITABLE</span>
+          </div>
+          <div class="columns">
+            <article class="task-column do-column">
+              <div class="column-header">✅ Do's</div>
+              <ul id="futureDoList" class="task-list"></ul>
+            </article>
+            <article class="task-column dont-column">
+              <div class="column-header">❌ Don'ts</div>
+              <ul id="futureDontList" class="task-list"></ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- HISTORY Tab: Past Tasks (Read Only) -->
+      <section class="tab-content" id="tabHistory">
+        <div class="card history-card">
+          <div class="history-header">
+            <div class="section-title history-title">
+              <span class="title-icon">📜</span>
+              <span>HISTORY</span>
+              <span class="title-badge read-only">READ-ONLY</span>
+            </div>
+            <button id="refreshBtn" class="btn-secondary">Refresh</button>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+
