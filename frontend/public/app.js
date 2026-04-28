@@ -1,7 +1,7 @@
 /**
  * Daily Task Tracker - Frontend Logic
  * Features: Tab navigation, checkbox completion, date range tasks,
- *           today-only stats, dark mode, loading states
+ *           today-only stats, dark mode, loading states, push notifications
  */
 
 const apiBase = "/api/tasks";
@@ -551,7 +551,14 @@ async function registerPush() {
     if (!subscription) {
       // Get VAPID public key from server
       const vapidKeyResponse = await fetch("/api/vapid-public-key");
+      if (!vapidKeyResponse.ok) {
+        throw new Error("Failed to get VAPID public key from server");
+      }
       const { publicKey } = await vapidKeyResponse.json();
+
+      if (!publicKey) {
+        throw new Error("Server VAPID public key not configured");
+      }
 
       // Subscribe
       subscription = await registration.pushManager.subscribe({
@@ -561,15 +568,21 @@ async function registerPush() {
     }
 
     // Send subscription to server
-    await fetch("/api/subscribe", {
+    const response = await fetch("/api/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(subscription),
     });
 
+    if (!response.ok) {
+      throw new Error("Failed to save subscription on server");
+    }
+
     console.log("Push subscription sent to server");
   } catch (error) {
     console.error("Push registration failed:", error);
+    notifToggle.textContent = "🔔 Error";
+    notifToggle.title = "Push setup failed: " + error.message;
   }
 }
 
