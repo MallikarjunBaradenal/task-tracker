@@ -39,6 +39,10 @@ const taskSchema = new mongoose.Schema(
       type: String,
       match: /^\d{2}:\d{2}$/,
     },
+    notified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
