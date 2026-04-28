@@ -59,6 +59,7 @@ async function ensureJsonStore() {
   try {
     await fs.access(storeFilePath);
   } catch {
+    console.warn(`[TaskService] JSON store not found at ${storeFilePath} — re-seeding with default tasks (this wipes all data!)`);
     const seed = [
       {
         id: uuidv4(),
@@ -119,6 +120,7 @@ class TaskService {
    */
   async getTasks(filters = {}) {
     const { date, type, status } = filters;
+    console.log(`[TaskService] getTasks — storage: ${this.isMongoEnabled ? "mongo" : "json"}, filters:`, filters);
 
     if (this.isMongoEnabled) {
       const query = {};
@@ -126,7 +128,9 @@ class TaskService {
       if (type) query.type = type;
       if (status) query.status = status;
 
-      return Task.find(query).sort({ createdAt: -1 });
+      const results = await Task.find(query).sort({ createdAt: -1 });
+      console.log(`[TaskService] getTasks — mongo returned ${results.length} tasks`);
+      return results;
     }
 
     let tasks = await readJsonTasks();
@@ -182,15 +186,20 @@ class TaskService {
    * Create one task (internal helper)
    */
   async _createSingleTask(taskData) {
+    const dataWithNotified = { ...taskData, notified: false };
+
     if (this.isMongoEnabled) {
-      return Task.create(taskData);
+      const created = await Task.create(dataWithNotified);
+      console.log(`[TaskService] _createSingleTask — mongo created: ${created.title} (${created.date})`);
+      return created;
     }
 
     const tasks = await readJsonTasks();
     const now = new Date().toISOString();
-    const task = { id: uuidv4(), ...taskData, createdAt: now, updatedAt: now };
+    const task = { id: uuidv4(), ...dataWithNotified, createdAt: now, updatedAt: now };
     tasks.unshift(task);
     await writeJsonTasks(tasks);
+    console.log(`[TaskService] _createSingleTask — json created: ${task.title} (${task.date})`);
     return task;
   }
 
