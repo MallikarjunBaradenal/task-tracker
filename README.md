@@ -2,7 +2,7 @@
 
 A beginner-friendly full-stack web app to track daily tasks, do's and don'ts, with strict date-based controls and intelligent completion tracking.
 
-## ✅ Features
+### ✅ Features
 
 ### Core Features
 - **Date-based task control** (strict rules):
